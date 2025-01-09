@@ -1,2 +1,4 @@
 #include <iostream>
-//do zrobienia
+
+using namespace std;
+
