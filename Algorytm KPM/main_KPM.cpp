@@ -2,10 +2,19 @@
 #include <string>
 
 using namespace std;
-
-// Print the current state of LPS computation
+/*Opis działania algorytmu Knutha–Morrisa–Pratta (KMP)
+Algorytm Knutha–Morrisa–Pratta (KMP) służy do wyszukiwania wzorca (ang. pattern) w tekście w czasie liniowym 
+𝑂(𝑛) O(n), gdzie 𝑛 to długość tekstu. Głównym celem jest unikanie ponownego porównywania znaków, które już zostały dopasowane. 
+KMP korzysta z dodatkowej tablicy nazywanej LPS (Longest Prefix Suffix), w której przechowywane są informacje o tym, 
+jak „duży” jest najdłuższy właściwy prefiks wzorca, 
+który jest jednocześnie sufiksem fragmentu wzorca zakończonego na danej pozycji.
+W załączonym kodzie można wyróżnić dwa zasadnicze etapy:
+Obliczanie tablicy LPS (funkcja computeLPSArray).
+Właściwe wyszukiwanie wzorca w tekście (funkcja KMPSearchSteps).*/
+// Wyswietla aktualny stan obliczania tablicy LPS (Longest Prefix Suffix)
 void printLPSState(const string &pattern, int i, int length, int *lps) {
-    cout << "i = " << i+1 << " (P[i] = " << pattern[i] << "), " << "length = " << length << ", LPS: [";
+    cout << "i = " << i + 1 << " (P[i] = " << pattern[i] << "), "
+         << "dlugosc = " << length << ", LPS: [";
     for (int k = 0; k <= i; k++) {
         cout << lps[k];
         if (k < i) cout << " ";
@@ -13,18 +22,18 @@ void printLPSState(const string &pattern, int i, int length, int *lps) {
     cout << "]\n";
 }
 
-// Compute the LPS (Longest Prefix Suffix) array step-by-step
+// Oblicza tablice LPS krok po kroku
 void computeLPSArray(const string &pattern, int *lps) {
     int m = (int)pattern.size();
-    int length = 0;  // length of the longest prefix suffix
-    lps[0] = 0;      // LPS[0] = 0 by definition
+    int length = 0;  // Dlugosc najdluzszego prefiksu sufiksu
+    lps[0] = 0;      // Pierwszy element tablicy LPS to zawsze 0
     int i = 1;
-    
-    cout << "Building the LPS array (Π):\n";
-    cout << "Pattern: " << pattern << "\n";
-    cout << "Indexing i from 1 for clarity as in presentation:\n\n";
-    cout << "Initially: i=1, lps[1]=0\n";
-    
+
+    cout << "Tworzenie tablicy LPS (Longest Prefix Suffix):\n";
+    cout << "Wzorzec: " << pattern << "\n";
+    cout << "Indeksowanie i od 1 dla czytelnosci:\n\n";
+    cout << "Poczatkowo: i=1, lps[1]=0\n";
+
     while (i < m) {
         if (pattern[i] == pattern[length]) {
             length++;
@@ -41,80 +50,74 @@ void computeLPSArray(const string &pattern, int *lps) {
             }
         }
     }
-    cout << "\nCompleted LPS array:\n[ ";
+    cout << "\nGotowa tablica LPS:\n[ ";
     for (int idx = 0; idx < m; idx++)
         cout << lps[idx] << " ";
     cout << "]\n\n";
 }
 
-// Print the current matching state as in presentations
+// Wyswietla aktualny stan dopasowywania wzorca w tekscie
 void printMatchState(const string &text, const string &pattern, int s, int q) {
-    cout << "Text:    ";
+    cout << "Tekst:    ";
     for (int i = 0; i < (int)text.size(); i++) {
         cout << text[i] << " ";
     }
-    cout << "\nPattern: ";
-    // Print spaces to show shift
+    cout << "\nWzorzec: ";
     for (int i = 0; i < s; i++) cout << "  ";
     for (int i = 0; i < (int)pattern.size(); i++) {
         cout << pattern[i] << " ";
     }
-    cout << "\nCurrent shift s = " << s << ", q = " << q << " (length of current match)\n\n";
+    cout << "\nAktualne przesuniecie s = " << s << ", q = " << q << " (dlugosc dopasowania)\n\n";
 }
 
-// KMP search demonstrating internal steps
+// Wyszukiwanie wzorca w tekscie metoda KMP
 void KMPSearchSteps(const string &text, const string &pattern, int *lps) {
     int n = (int)text.size();
     int m = (int)pattern.size();
 
-    cout << "KMP Matching Steps:\n";
-    cout << "Text: " << text << "\nPattern: " << pattern << "\n\n";
-    
-    int i = 0; // index in text
-    int j = 0; // index in pattern
-    
-    printMatchState(text, pattern, i-j, j);
-    
+    cout << "Kroki wyszukiwania wzorca metoda KMP:\n";
+    cout << "Tekst: " << text << "\nWzorzec: " << pattern << "\n\n";
+
+    int i = 0; // Indeks w tekscie
+    int j = 0; // Indeks w wzorcu
+
+    printMatchState(text, pattern, i - j, j);
+
     while (i < n) {
         if (text[i] == pattern[j]) {
             i++;
             j++;
-            printMatchState(text, pattern, i-j, j);
-            
+            printMatchState(text, pattern, i - j, j);
+
             if (j == m) {
-                // Found a full match
-                cout << "Full match found at position " << (i-j) << "\n\n";
-                j = lps[j-1];
-                printMatchState(text, pattern, i-j, j);
+                // Pelne dopasowanie znalezione
+                cout << "Dopasowanie znalezione na pozycji " << (i - j) << "\n\n";
+                j = lps[j - 1];
+                printMatchState(text, pattern, i - j, j);
             }
         } else {
-            // mismatch
             if (j != 0) {
-                int old_j = j;
-                j = lps[j-1]; 
-                printMatchState(text, pattern, i-j, j);
+                j = lps[j - 1];
+                printMatchState(text, pattern, i - j, j);
             } else {
                 i++;
-                printMatchState(text, pattern, i-j, j);
+                printMatchState(text, pattern, i - j, j);
             }
         }
     }
 }
 
 int main() {
-    // Example from the slides:
-    // Text:    b a c b a b b a a b a b
-    // Pattern: a b a b b a b c a
-    string text    = "bacbabbaabab";
-    string pattern = "ababbabca";
-    
+    string text = "bacbabbaabab";   // Tekst, w ktorym szukamy
+    string pattern = "ababbabca";   // Wzorzec do znalezienia
+
     int m = (int)pattern.size();
     int *lps = new int[m];
 
-    // Compute LPS array step-by-step
+    // Obliczanie tablicy LPS krok po kroku
     computeLPSArray(pattern, lps);
 
-    // Demonstrate the search process step-by-step
+    // Wyswietlanie krokow dopasowywania wzorca
     KMPSearchSteps(text, pattern, lps);
 
     delete[] lps;
