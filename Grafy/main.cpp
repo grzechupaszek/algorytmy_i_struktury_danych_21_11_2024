@@ -51,7 +51,7 @@ struct Edge {
 bool readGraphFromFile(const string &filename) {
     ifstream file(filename.c_str());
     if(!file) {
-        cerr << "Blad otwarcia pliku: " << filename << endl;
+        cout << "Blad otwarcia pliku: " << filename << endl;
         return false;
     }
 
@@ -59,7 +59,7 @@ bool readGraphFromFile(const string &filename) {
     int n;
     file >> n;
     if(!file || n <= 0) {
-        cerr << "Nieprawidlowa liczba wierzcholkow: " << n << endl;
+        cout << "Nieprawidlowa liczba wierzcholkow: " << n << endl;
         return false;
     }
 
@@ -78,7 +78,7 @@ bool readGraphFromFile(const string &filename) {
             int w;
             file >> w;
             if(!file) {
-                cerr << "Blad podczas wczytywania wagi krawedzi (" << i << "," << j << ")" << endl;
+                cout << "Blad podczas wczytywania wagi krawedzi (" << i << "," << j << ")" << endl;
                 return false;
             }
             if(i == j) {
@@ -172,7 +172,7 @@ int getAllEdges(Edge edges[]) {
 /**
  *  sortEdges(edges, n)
  *  -----------------
- *  Prosty bubble sort (bez <algorithm>) sortujący krawędzie po wadze.
+ *  Prosty bubble sort sortujący krawędzie po wadze.
  */
 void sortEdges(Edge edges[], int n) {
     for(int i=0; i<n-1; i++){
@@ -189,7 +189,7 @@ void sortEdges(Edge edges[], int n) {
 /**
  *  kruskalMST()
  *  -----------------
- *  Implementacja algorytmu Kruskala do wyznaczenia MST (Minimalnego Drzewa Rozpinającego).
+ *  Implementacja algorytmu Kruskala do wyznaczenia MST 
  */
 void kruskalMST() {
     // Musimy mieć zainicjalizowany Union-Find
@@ -314,7 +314,8 @@ void dijkstra(int start) {
 
         visited[u] = true;
 
-        // Relaksacja krawędzi wychodzących z u
+        // Relaksacja krawędzi wychodzących z u dzieki ktorej aktualizujemy najmniejsza
+        //  dotychczas wyliczona odleglosc do sasiednich wiercholkow.
         for(int v=0; v<V; v++){
             if(!visited[v] && graph[u][v] != INF) {
                 int alt = dist[u] + graph[u][v];
@@ -349,11 +350,9 @@ void dijkstra(int start) {
  *  5. Zwalnia pamięć (kasuje macierz 'graph', tablice 'parent' i 'rnk').
  */
 int main() {
-    ios::sync_with_stdio(false);
-
     // Wczytujemy graf z pliku
     if(!readGraphFromFile("graf.txt")) {
-        cerr << "Nie udalo sie wczytac grafu z pliku.\n";
+        cout << "Nie udalo sie wczytac grafu z pliku.\n";
         return 1;
     }
 
