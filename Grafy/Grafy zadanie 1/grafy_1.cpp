@@ -46,13 +46,13 @@ struct Node {
 int** readMNFromFile(const string &filename, int &n) {
     ifstream fin(filename.c_str());
     if(!fin) {
-        cerr << "Blad otwarcia pliku: " << filename << endl;
+        cout << "Blad otwarcia pliku: " << filename << endl;
         n = 0;
         return nullptr;
     }
     fin >> n;
     if(!fin || n <= 0) {
-        cerr << "Nieprawidlowa liczba wierzcholkow: " << n << endl;
+        cout << "Nieprawidlowa liczba wierzcholkow: " << n << endl;
         n = 0;
         return nullptr;
     }
@@ -70,7 +70,7 @@ int** readMNFromFile(const string &filename, int &n) {
             int w;
             fin >> w;
             if(!fin) {
-                cerr << "Blad wczytywania wagi (" << i << "," << j << ")" << endl;
+                cout << "Blad wczytywania wagi (" << i << "," << j << ")" << endl;
                 // zwolnienie i return
                 for(int k=0; k<=i; k++) delete[] MN[k];
                 delete[] MN;
@@ -242,13 +242,11 @@ Edge* generateLEfromLN(Node** LN, int n, int &edgesCount) {
 }
 
 int main() {
-    ios::sync_with_stdio(false);
-
     // 1. Wczytanie macierzy MN z pliku graf.txt
     int n = 0;
     int** MN = readMNFromFile("graf.txt", n);
     if(!MN || n == 0) {
-        cerr << "Nie udalo sie wczytac macierzy.\n";
+        cout << "Nie udalo sie wczytac macierzy.\n";
         return 1;
     }
     printMN(MN, n);
